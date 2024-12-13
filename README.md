@@ -171,8 +171,8 @@ await q.enqueue(myFunction, args, opts);
   ├── spec.json           # Universal API specification
   └── src/
       └── {language}/
-          ├── {target}/   # Platform-specific code
-          │   └── {implementation}/
+          ├── {target-runtime}/   # Platform-specific code; for instance node
+          │   └── {implementation}/ # for instance, bullmq
           ├── types.{ext}      # Language-specific type definitions
           ├── implementation.{ext}
           └── config.{ext}
