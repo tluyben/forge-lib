@@ -1,0 +1,324 @@
+{
+  "types": {
+    "Database": {
+      "description": "Core database interface"
+    },
+    "DatabaseConfig": {
+      "description": "Configuration for database initialization",
+      "properties": {
+        "implementation": {
+          "basetype": "string",
+          "dimension": 1,
+          "required": true,
+          "description": "List of enabled implementations (e.g., ['postgres', 'mysql'])",
+          "default": null
+        },
+        "host": {
+          "basetype": "string",
+          "required": true,
+          "description": "Database host",
+          "default": "localhost"
+        },
+        "port": {
+          "basetype": "int",
+          "required": false,
+          "description": "Database port",
+          "default": null
+        },
+        "username": {
+          "basetype": "string",
+          "required": true,
+          "description": "Database username"
+        },
+        "password": {
+          "basetype": "string",
+          "required": true,
+          "description": "Database password"
+        },
+        "database": {
+          "basetype": "string",
+          "required": true,
+          "description": "Database name"
+        },
+        "pool": {
+          "basetype": "PoolConfig",
+          "required": false,
+          "description": "Connection pool configuration",
+          "default": null
+        }
+      }
+    },
+    "PoolConfig": {
+      "description": "Connection pool settings",
+      "properties": {
+        "min": {
+          "basetype": "int",
+          "required": false,
+          "description": "Minimum number of connections",
+          "default": 0,
+          "unsigned": true
+        },
+        "max": {
+          "basetype": "int",
+          "required": false,
+          "description": "Maximum number of connections",
+          "default": 10,
+          "unsigned": true
+        },
+        "idle_timeout": {
+          "basetype": "int",
+          "required": false,
+          "description": "Idle timeout in milliseconds",
+          "default": 10000,
+          "unsigned": true
+        }
+      }
+    },
+    "QueryResult": {
+      "description": "Result of a database query",
+      "properties": {
+        "rows": {
+          "basetype": "any",
+          "dimension": 1,
+          "required": true,
+          "description": "Array of result rows"
+        },
+        "rowCount": {
+          "basetype": "int",
+          "required": true,
+          "description": "Number of rows affected/returned",
+          "unsigned": true
+        },
+        "fields": {
+          "basetype": "Field",
+          "dimension": 1,
+          "required": true,
+          "description": "Information about result columns"
+        }
+      }
+    },
+    "Field": {
+      "description": "Database field information",
+      "properties": {
+        "name": {
+          "basetype": "string",
+          "required": true,
+          "description": "Field name"
+        },
+        "tableId": {
+          "basetype": "int",
+          "required": false,
+          "description": "ID of the table this field belongs to"
+        },
+        "columnId": {
+          "basetype": "int",
+          "required": false,
+          "description": "Column number within the table"
+        },
+        "dataType": {
+          "basetype": "int",
+          "required": true,
+          "description": "Data type ID"
+        },
+        "dataTypeName": {
+          "basetype": "string",
+          "required": true,
+          "description": "Name of the data type"
+        },
+        "length": {
+          "basetype": "int",
+          "required": false,
+          "description": "Field length for variable length types",
+          "unsigned": true
+        },
+        "nullable": {
+          "basetype": "bool",
+          "required": true,
+          "description": "Whether the field can be null"
+        }
+      }
+    },
+    "Transaction": {
+      "description": "Database transaction",
+      "properties": {
+        "id": {
+          "basetype": "string",
+          "required": true,
+          "description": "Transaction identifier"
+        },
+        "status": {
+          "basetype": "string",
+          "required": true,
+          "description": "Transaction status",
+          "enum": ["active", "committed", "rolled_back"]
+        },
+        "startTime": {
+          "basetype": "datetime",
+          "required": true,
+          "description": "When the transaction started"
+        }
+      }
+    },
+    "QueryOptions": {
+      "description": "Options for query execution",
+      "properties": {
+        "timeout": {
+          "basetype": "int",
+          "required": false,
+          "description": "Query timeout in milliseconds",
+          "default": 0,
+          "unsigned": true
+        },
+        "prepare": {
+          "basetype": "bool",
+          "required": false,
+          "description": "Whether to prepare the statement",
+          "default": false
+        },
+        "cache": {
+          "basetype": "bool",
+          "required": false,
+          "description": "Whether to cache the query plan",
+          "default": true
+        }
+      }
+    }
+  },
+  "functions": {
+    "createDatabase": {
+      "description": "Creates a new database connection",
+      "parameters": [
+        {
+          "name": "config",
+          "basetype": "DatabaseConfig",
+          "required": true,
+          "description": "Database configuration"
+        },
+        {
+          "name": "name",
+          "basetype": "string",
+          "required": true,
+          "description": "Unique identifier for this database connection"
+        }
+      ],
+      "returns": {
+        "basetype": "Database",
+        "is_async": true,
+        "description": "Database instance"
+      }
+    },
+    "$query": {
+      "description": "Executes a SQL query",
+      "parameters": [
+        {
+          "name": "sql",
+          "basetype": "string",
+          "required": true,
+          "description": "SQL query string"
+        },
+        {
+          "name": "parameters",
+          "basetype": "any",
+          "dimension": 1,
+          "required": false,
+          "default": [],
+          "description": "Query parameters"
+        },
+        {
+          "name": "options",
+          "basetype": "QueryOptions",
+          "required": false,
+          "default": {},
+          "description": "Query execution options"
+        }
+      ],
+      "returns": {
+        "basetype": "QueryResult",
+        "is_async": true,
+        "description": "Query result"
+      }
+    },
+    "$batchQuery": {
+      "description": "Executes multiple SQL queries",
+      "parameters": [
+        {
+          "name": "queries",
+          "basetype": "object",
+          "dimension": 1,
+          "required": true,
+          "description": "Array of {sql, parameters} objects"
+        },
+        {
+          "name": "useTransaction",
+          "basetype": "bool",
+          "required": false,
+          "default": false,
+          "description": "Whether to execute in a transaction"
+        },
+        {
+          "name": "options",
+          "basetype": "QueryOptions",
+          "required": false,
+          "default": {},
+          "description": "Query execution options"
+        }
+      ],
+      "returns": {
+        "basetype": "QueryResult",
+        "dimension": 1,
+        "is_async": true,
+        "description": "Array of query results"
+      }
+    },
+    "$startTransaction": {
+      "description": "Starts a new transaction",
+      "parameters": [],
+      "returns": {
+        "basetype": "Transaction",
+        "is_async": true,
+        "description": "New transaction"
+      }
+    },
+    "$commit": {
+      "description": "Commits the current transaction",
+      "parameters": [
+        {
+          "name": "transaction",
+          "basetype": "Transaction",
+          "required": true,
+          "description": "Transaction to commit"
+        }
+      ],
+      "returns": {
+        "basetype": "empty",
+        "is_async": true,
+        "description": "Resolves when committed"
+      }
+    },
+    "$rollback": {
+      "description": "Rolls back the current transaction",
+      "parameters": [
+        {
+          "name": "transaction",
+          "basetype": "Transaction",
+          "required": true,
+          "description": "Transaction to roll back"
+        }
+      ],
+      "returns": {
+        "basetype": "empty",
+        "is_async": true,
+        "description": "Resolves when rolled back"
+      }
+    },
+    "$close": {
+      "description": "Closes the database connection",
+      "parameters": [],
+      "returns": {
+        "basetype": "empty",
+        "is_async": true,
+        "description": "Resolves when connection is closed"
+      }
+    }
+  }
+}
