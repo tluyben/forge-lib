@@ -6,6 +6,8 @@ const DEFAULT_POOL_CONFIG: PoolConfig = {
   idle_timeout: 10000,
 };
 
+const VALID_DB_TYPES = ["mysql", "postgres", "sqlite", "clickhouse"];
+
 export function validateConfig(config: DatabaseConfig): void {
   if (
     !config.implementation ||
@@ -13,6 +15,10 @@ export function validateConfig(config: DatabaseConfig): void {
     config.implementation.length === 0
   ) {
     throw new Error("At least one implementation must be specified");
+  }
+
+  if (!config.type || !VALID_DB_TYPES.includes(config.type)) {
+    throw new Error("Valid database type (mysql, postgres, sqlite, clickhouse) is required");
   }
 
   if (!config.host) {

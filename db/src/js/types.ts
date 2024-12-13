@@ -1,5 +1,6 @@
 export interface DatabaseConfig {
   implementation: string[];
+  type: "mysql" | "postgres" | "sqlite" | "clickhouse";  // Added type property
   host: string;
   port?: number;
   username: string;

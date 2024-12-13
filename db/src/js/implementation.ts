@@ -9,6 +9,9 @@ export async function registerImplementation(
 ): Promise<void> {
   implementations[name] = implementation;
 }
+// Import the Knex implementation by default
+import { implementation as KnexImplementation } from "./node/knex/implementation";
+registerImplementation("knex", KnexImplementation);
 
 export async function createDatabase(
   config: DatabaseConfig,

@@ -10,8 +10,14 @@
           "basetype": "string",
           "dimension": 1,
           "required": true,
-          "description": "List of enabled implementations (e.g., ['postgres', 'mysql'])",
+          "description": "List of enabled implementations for js interfaces, currently knex",
           "default": null
+        },
+        "type": {
+          "basetype": "string",
+          "required": true,
+          "description": "Type of database; mysql, postgres, sqlite or clickhouse",
+          "default": "postgres"
         },
         "host": {
           "basetype": "string",
