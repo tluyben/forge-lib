@@ -15,6 +15,10 @@ export async function registerImplementation(
 import { implementation as bullMQImplementation } from "./node/bullmq/implementation";
 registerImplementation("bullmq", bullMQImplementation);
 
+export function createConfig(c: any): QueueConfig {
+  return c as QueueConfig;
+}
+
 export function createQueue(config: QueueConfig, name: string): Queue {
   validateConfig(config);
   const implementationName = getImplementation(config);
