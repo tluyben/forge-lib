@@ -109,6 +109,27 @@
           "description": "Time to live after completion (seconds)",
           "default": 0,
           "unsigned": true
+        },
+        "backoff": {
+          "basetype": "object",
+          "required": false,
+          "description": "Retry backoff strategy configuration",
+          "default": null,
+          "properties": {
+            "type": {
+              "basetype": "string",
+              "required": true,
+              "description": "Backoff strategy type (linear, exponential, custom)",
+              "default": "linear"
+            },
+            "delay": {
+              "basetype": "int",
+              "required": true,
+              "description": "Base delay in milliseconds",
+              "default": 1000,
+              "unsigned": true
+            }
+          }
         }
       }
     }

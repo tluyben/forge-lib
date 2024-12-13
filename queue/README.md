@@ -57,6 +57,24 @@ await queue.enqueue(myFunction, [], {
   retry: [0, 2, 5, 30], // Retry after 0s, 2s, 5s, 30s
   dlq: dlq, // Reference to DLQ queue
 });
+
+// Job with exponential backoff
+await queue.enqueue(myFunction, [], {
+  retry: 5, // Number of retries
+  backoff: {
+    type: "exponential",
+    delay: 1000, // Will result in delays of 1s, 2s, 4s, 8s, 16s
+  },
+});
+
+// Job with linear backoff
+await queue.enqueue(myFunction, [], {
+  retry: 3,
+  backoff: {
+    type: "linear",
+    delay: 1000, // Will result in delays of 1s, 2s, 3s
+  },
+});
 ```
 
 ## 🎛️ Configuration Options
@@ -89,6 +107,10 @@ await queue.enqueue(myFunction, [], {
     priority: 1,                 // Priority level (default: 0)
     timeout: 5000,              // Timeout in ms (default: 0)
     retry: [0, 2, 5, 30],       // Retry delays in seconds (default: [])
+    backoff: {
+        type: "exponential",     // linear, exponential, or custom
+        delay: 1000             // base delay in ms
+    },
 
     // Storage (all optional)
     keep_results: true,         // Keep completed job data (default: true)
