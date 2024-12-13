@@ -1,0 +1,116 @@
+{
+  "types": {
+    "Queue": {
+      "description": "Core queue type representing a job queue"
+    },
+    "QueueConfig": {
+      "description": "Configuration for queue initialization",
+      "properties": {
+        "implementation": {
+          "basetype": "string",
+          "dimension": 1,
+          "required": true,
+          "description": "List of enabled implementations",
+          "default": null
+        },
+        "redis": {
+          "basetype": "string",
+          "dimension": 0,
+          "required": ["bullmq"],
+          "description": "Redis connection string for implementations that need it",
+          "default": "redis://localhost:6379"
+        },
+        "is_dlq": {
+          "basetype": "bool",
+          "dimension": 0,
+          "required": false,
+          "description": "Whether this queue is a DLQ",
+          "default": false
+        }
+      }
+    },
+    "JobOptions": {
+      "description": "Options for job enqueuing",
+      "properties": {
+        "id": {
+          "basetype": "string",
+          "required": false,
+          "description": "Unique identifier for the job",
+          "default": null
+        },
+        "name": {
+          "basetype": "string",
+          "required": false,
+          "description": "Name for job grouping",
+          "default": null
+        },
+        "tags": {
+          "basetype": "string",
+          "dimension": 1,
+          "required": false,
+          "description": "Tags for job categorization",
+          "default": []
+        },
+        "at": {
+          "basetype": "datetime",
+          "required": false,
+          "description": "Specific time to run the job",
+          "default": null
+        },
+        "cron": {
+          "basetype": "string",
+          "required": false,
+          "description": "Cron schedule expression",
+          "default": null
+        },
+        "repeat": {
+          "basetype": "int",
+          "required": false,
+          "description": "Number of times to repeat",
+          "default": 0,
+          "unsigned": true
+        },
+        "priority": {
+          "basetype": "int",
+          "required": false,
+          "description": "Job priority (higher = higher priority)",
+          "default": 0
+        },
+        "timeout": {
+          "basetype": "int",
+          "required": false,
+          "description": "Job timeout in milliseconds",
+          "default": 0,
+          "unsigned": true
+        },
+        "retry": {
+          "basetype": "int",
+          "dimension": 1,
+          "required": false,
+          "description": "Retry delays in seconds",
+          "default": [],
+          "unsigned": true
+        },
+        "dlq": {
+          "basetype": ["string", "Queue"],
+          "required": false,
+          "description": "Dead letter queue name or Queue instance",
+          "default": null
+        },
+        "keep_results": {
+          "basetype": "bool",
+          "required": false,
+          "description": "Keep completed job data",
+          "default": true
+        },
+        "ttl": {
+          "basetype": "int",
+          "required": false,
+          "description": "Time to live after completion (seconds)",
+          "default": 0,
+          "unsigned": true
+        }
+      }
+    }
+  }
+}

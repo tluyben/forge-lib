@@ -14,11 +14,13 @@ Every type in Forge-lib is defined by the following structure:
 {
   "basetype": "<type-name>",
   "description": "Human readable description",
+  "default": null, // define a default for this, is of the same basetype / dimension etc of course
   "dimension": 0, // 0 = scalar, 1 = array, 2 = matrix, etc.
   "is-async": false, // Whether the type represents an async value
   "size": null, // Optional size constraint
   "required": true, // true/false or array of implementations
   "by-reference": null // Relevant for languages like C, C++, Rust
+  "unsigned": false // mostly not needed but again for low level
 }
 ```
 
@@ -28,7 +30,7 @@ The following base types are available across all implementations:
 
 - `string`: UTF-8 string representation
 - `float`: Single-precision floating point
-- `int`: 32-bit integer
+- `int`: Integer
 - `double`: Double-precision floating point
 - `date`: Calendar date without time
 - `datetime`: Calendar date with time
@@ -36,11 +38,10 @@ The following base types are available across all implementations:
 - `empty`: Represents void/unit
 - `null`: Null value (note: undefined is not supported)
 - `bool`: Boolean value
-- `uint`: Unsigned 32-bit integer
-- `long`: 64-bit integer
-- `ulong`: Unsigned 64-bit integer
-- `byte`: 8-bit integer
 - `binary`: Raw binary data
+- `stream`: Stream of any type
+- `*`: any type
+- `function': a function (always by reference)
 
 ## Specification Format 📋
 
