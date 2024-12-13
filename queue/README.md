@@ -75,6 +75,25 @@ await queue.enqueue(myFunction, [], {
     delay: 1000, // Will result in delays of 1s, 2s, 3s
   },
 });
+
+// Job with lifecycle events
+await queue.enqueue(myFunction, [], {
+  on_start: (job) => {
+    console.log(`Job ${job.id} started`);
+  },
+  on_complete: (job, result) => {
+    console.log(`Job ${job.id} completed with result:`, result);
+  },
+  on_progress: (job, progress) => {
+    console.log(`Job ${job.id} progress:`, progress);
+  },
+  on_retry: (job, error) => {
+    console.log(`Job ${job.id} failed, retrying:`, error);
+  },
+  on_failed: (job, error) => {
+    console.log(`Job ${job.id} failed permanently:`, error);
+  },
+});
 ```
 
 ## 🎛️ Configuration Options
@@ -117,7 +136,14 @@ await queue.enqueue(myFunction, [], {
     ttl: 3600,                 // Time to live in seconds (default: 0)
 
     // Error Handling (optional)
-    dlq: "dlq-name" | Queue     // DLQ name or instance (default: null)
+    dlq: "dlq-name" | Queue,    // DLQ name or instance (default: null)
+
+    // Lifecycle Events (all optional)
+    on_start: Function,         // Called when job starts
+    on_complete: Function,      // Called on successful completion
+    on_progress: Function,      // Called when progress is reported
+    on_retry: Function,         // Called before retry attempt
+    on_failed: Function         // Called on final failure
 }
 ```
 
