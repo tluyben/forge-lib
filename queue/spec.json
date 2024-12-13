@@ -133,5 +133,65 @@
         }
       }
     }
+  },
+  "functions": {
+    "$enqueue": {
+      "description": "Enqueues a job in the queue",
+      "parameters": [
+        {
+          "name": "function",
+          "basetype": "Function",
+          "required": true,
+          "description": "Function to be executed"
+        },
+        {
+          "name": "args",
+          "basetype": "any",
+          "dimension": 1,
+          "required": true,
+          "default": [],
+          "description": "Arguments to pass to the function"
+        },
+        {
+          "name": "options",
+          "basetype": "JobOptions",
+          "required": false,
+          "default": {},
+          "description": "Job configuration options"
+        }
+      ],
+      "returns": {
+        "basetype": "Job",
+        "is_async": true,
+        "description": "The created job instance"
+      },
+      "lifecycle_events": {
+        "on_start": {
+          "basetype": "Function",
+          "required": false,
+          "description": "Called when job starts"
+        },
+        "on_complete": {
+          "basetype": "Function",
+          "required": false,
+          "description": "Called on successful completion"
+        },
+        "on_progress": {
+          "basetype": "Function",
+          "required": false,
+          "description": "Called when progress is reported"
+        },
+        "on_retry": {
+          "basetype": "Function",
+          "required": false,
+          "description": "Called before retry attempt"
+        },
+        "on_failed": {
+          "basetype": "Function",
+          "required": false,
+          "description": "Called on final failure"
+        }
+      }
+    }
   }
 }

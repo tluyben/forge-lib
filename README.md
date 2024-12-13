@@ -40,7 +40,7 @@ The following base types are available across all implementations:
 - `bool`: Boolean value
 - `binary`: Raw binary data
 - `stream`: Stream of any type
-- `*`: any type
+- `*`/`any`: any type
 - `function': a function (always by reference)
 
 ## Specification Format 📋

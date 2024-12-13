@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Forge-lib Service Specification Schema",
+  "description": "Meta schema for validating service specifications",
+  "type": "object",
+  "required": ["types", "functions"],
+  "properties": {
+    "types": {
+      "type": "object",
+      "description": "Type definitions for the service",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "properties"],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["basetype", "description"],
+              "properties": {
+                "basetype": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "string",
+                        "float",
+                        "int",
+                        "double",
+                        "date",
+                        "datetime",
+                        "time",
+                        "empty",
+                        "null",
+                        "bool",
+                        "uint",
+                        "long",
+                        "ulong",
+                        "byte",
+                        "binary",
+                        "Function",
+                        "object"
+                      ]
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of possible basetypes for union types"
+                    }
+                  ]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "default": {
+                  "type": [
+                    "null",
+                    "string",
+                    "number",
+                    "boolean",
+                    "array",
+                    "object"
+                  ]
+                },
+                "dimension": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "is_async": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "size": {
+                  "type": ["null", "integer"],
+                  "minimum": 0,
+                  "default": null
+                },
+                "required": {
+                  "oneOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "default": false
+                },
+                "by_reference": {
+                  "type": ["null", "boolean"],
+                  "default": null
+                },
+                "unsigned": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "functions": {
+      "type": "object",
+      "description": "Function definitions for the service",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "parameters", "returns"],
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "basetype"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "basetype": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "required": {
+                  "type": "boolean",
+                  "default": true
+                },
+                "default": {
+                  "type": [
+                    "null",
+                    "string",
+                    "number",
+                    "boolean",
+                    "array",
+                    "object"
+                  ]
+                }
+              }
+            }
+          },
+          "returns": {
+            "type": "object",
+            "required": ["basetype"],
+            "properties": {
+              "basetype": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "dimension": {
+                "type": "integer",
+                "minimum": 0,
+                "default": 0
+              },
+              "is_async": {
+                "type": "boolean",
+                "default": false
+              }
+            }
+          },
+          "lifecycle_events": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["basetype", "description"],
+              "properties": {
+                "basetype": {
+                  "type": "string",
+                  "enum": ["Function"]
+                },
+                "description": {
+                  "type": "string"
+                },
+                "required": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
