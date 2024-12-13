@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <stubname> <language> <implementation>" 
+    exit 1
+fi
+
+STUBNAME=$1
+LANGUAGE=$2
+IMPLEMENTATION=$3
+EXT=$2
+
+if [ $LANGUAGE == "js" ]; then
+    EXT="ts"
+fi
+
+mkdir -p $STUBNAME/src/$LANGUAGE/node
+
+touch $STUBNAME/spec.json 
+touch $STUBNAME/README.md
+touch $STUBNAME/src/$LANGUAGE/config.$EXT
+touch $STUBNAME/src/$LANGUAGE/types.$EXT
+touch $STUBNAME/src/$LANGUAGE/implemenation.$EXT
+touch $STUBNAME/src/$LANGUAGE/node/implemenation.$EXT
