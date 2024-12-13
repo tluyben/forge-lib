@@ -29,6 +29,113 @@
         }
       }
     },
+    "BackoffOptions": {
+      "description": "Configuration for retry backoff strategy",
+      "properties": {
+        "type": {
+          "basetype": "string",
+          "required": true,
+          "description": "Backoff strategy type (linear, exponential, custom)",
+          "default": "linear"
+        },
+        "delay": {
+          "basetype": "int",
+          "required": true,
+          "description": "Base delay in milliseconds",
+          "default": 1000,
+          "unsigned": true
+        }
+      }
+    },
+    "JobState": {
+      "description": "Possible states of a job",
+      "basetype": "string",
+      "enum": [
+        "waiting",
+        "active",
+        "completed",
+        "failed",
+        "delayed",
+        "retrying"
+      ]
+    },
+    "Job": {
+      "description": "Represents a job in the queue",
+      "properties": {
+        "id": {
+          "basetype": "string",
+          "required": true,
+          "description": "Unique job identifier"
+        },
+        "name": {
+          "basetype": "string",
+          "required": true,
+          "description": "Job name"
+        },
+        "state": {
+          "basetype": "JobState",
+          "required": true,
+          "description": "Current state of the job"
+        },
+        "data": {
+          "basetype": "any",
+          "required": true,
+          "description": "Job payload data"
+        },
+        "args": {
+          "basetype": "any",
+          "dimension": 1,
+          "required": true,
+          "description": "Arguments to be passed to the job function"
+        },
+        "options": {
+          "basetype": "JobOptions",
+          "required": true,
+          "description": "Options the job was created with"
+        },
+        "progress": {
+          "basetype": "any",
+          "required": false,
+          "description": "Current progress information"
+        },
+        "result": {
+          "basetype": "any",
+          "required": false,
+          "description": "Job result if completed"
+        },
+        "error": {
+          "basetype": "string",
+          "required": false,
+          "description": "Error message if failed"
+        },
+        "attemptsMade": {
+          "basetype": "int",
+          "required": true,
+          "description": "Number of attempts made",
+          "unsigned": true
+        },
+        "finishedOn": {
+          "basetype": "datetime",
+          "required": false,
+          "description": "When the job finished processing"
+        },
+        "processedOn": {
+          "basetype": "datetime",
+          "required": false,
+          "description": "When the job started processing"
+        }
+      }
+    },
+    "QueueImplementation": {
+      "description": "Plugin interface for queue implementations",
+      "properties": {
+        "createQueue": {
+          "basetype": "Function",
+          "required": true,
+          "description": "Factory function to create queue instances"
+        }
+      }
+    },
     "JobOptions": {
       "description": "Options for job enqueuing",
       "properties": {
@@ -111,30 +218,36 @@
           "unsigned": true
         },
         "backoff": {
-          "basetype": "object",
+          "basetype": "BackoffOptions",
           "required": false,
           "description": "Retry backoff strategy configuration",
-          "default": null,
-          "properties": {
-            "type": {
-              "basetype": "string",
-              "required": true,
-              "description": "Backoff strategy type (linear, exponential, custom)",
-              "default": "linear"
-            },
-            "delay": {
-              "basetype": "int",
-              "required": true,
-              "description": "Base delay in milliseconds",
-              "default": 1000,
-              "unsigned": true
-            }
-          }
+          "default": null
         }
       }
     }
   },
   "functions": {
+    "createQueue": {
+      "description": "Creates a new queue instance",
+      "parameters": [
+        {
+          "name": "config",
+          "basetype": "QueueConfig",
+          "required": true,
+          "description": "Queue configuration"
+        },
+        {
+          "name": "name",
+          "basetype": "string",
+          "required": true,
+          "description": "Queue name"
+        }
+      ],
+      "returns": {
+        "basetype": "Queue",
+        "description": "New queue instance"
+      }
+    },
     "$enqueue": {
       "description": "Enqueues a job in the queue",
       "parameters": [
@@ -191,6 +304,57 @@
           "required": false,
           "description": "Called on final failure"
         }
+      }
+    },
+    "$pause": {
+      "description": "Pauses job processing on the queue",
+      "parameters": [],
+      "returns": {
+        "basetype": "empty",
+        "is_async": true,
+        "description": "Resolves when queue is paused"
+      }
+    },
+    "$resume": {
+      "description": "Resumes job processing on the queue",
+      "parameters": [],
+      "returns": {
+        "basetype": "empty",
+        "is_async": true,
+        "description": "Resolves when queue is resumed"
+      }
+    },
+    "$getJob": {
+      "description": "Retrieves a specific job by ID",
+      "parameters": [
+        {
+          "name": "jobId",
+          "basetype": "string",
+          "required": true,
+          "description": "ID of the job to retrieve"
+        }
+      ],
+      "returns": {
+        "basetype": "Job",
+        "is_async": true,
+        "description": "The requested job or null if not found"
+      }
+    },
+    "$getJobs": {
+      "description": "Retrieves jobs by status",
+      "parameters": [
+        {
+          "name": "status",
+          "basetype": "string",
+          "required": true,
+          "description": "Status to filter by (waiting, active, completed, failed, delayed, retrying)"
+        }
+      ],
+      "returns": {
+        "basetype": "Job",
+        "is_async": true,
+        "dimension": 1,
+        "description": "Array of jobs matching the status"
       }
     }
   }
