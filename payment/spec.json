@@ -1,0 +1,261 @@
+{
+  "types": {
+    "PaymentConfig": {
+      "description": "Configuration for payment service initialization",
+      "properties": {
+        "implementation": {
+          "basetype": "string",
+          "dimension": 1,
+          "required": true,
+          "description": "List of enabled payment implementations",
+          "default": null
+        },
+        "api_keys": {
+          "basetype": "string",
+          "dimension": 1,
+          "required": true,
+          "description": "API keys for the implementations",
+          "default": null
+        },
+        "webhook_secret": {
+          "basetype": "string",
+          "required": false,
+          "description": "Secret for webhook verification",
+          "default": null
+        }
+      }
+    },
+    "ProductClassification": {
+      "description": "Classification details for a product",
+      "properties": {
+        "type": {
+          "basetype": "string",
+          "required": true,
+          "description": "Product type (physical_good, digital_good, service)",
+          "default": "digital_good"
+        },
+        "category": {
+          "basetype": "string",
+          "required": true,
+          "description": "Product category for classification",
+          "default": "other"
+        },
+        "tax_classification": {
+          "basetype": "string",
+          "required": true,
+          "description": "Tax classification code",
+          "default": "standard"
+        },
+        "delivery": {
+          "basetype": "string",
+          "required": true,
+          "description": "Delivery method (electronic, physical, service)",
+          "default": "electronic"
+        }
+      }
+    },
+    "Product": {
+      "description": "A purchasable product or service",
+      "properties": {
+        "id": {
+          "basetype": "string",
+          "required": false,
+          "description": "Unique product identifier"
+        },
+        "name": {
+          "basetype": "string",
+          "required": true,
+          "description": "Product name"
+        },
+        "description": {
+          "basetype": "string",
+          "required": false,
+          "description": "Product description"
+        },
+        "active": {
+          "basetype": "bool",
+          "required": true,
+          "description": "Whether the product is active",
+          "default": true
+        },
+        "classification": {
+          "basetype": "ProductClassification",
+          "required": true,
+          "description": "Product classification details"
+        },
+        "metadata": {
+          "basetype": "any",
+          "required": false,
+          "description": "Additional product metadata"
+        }
+      }
+    },
+    "RecurringConfig": {
+      "description": "Configuration for recurring payments",
+      "properties": {
+        "interval": {
+          "basetype": "string",
+          "required": true,
+          "description": "Billing interval (day, week, month, year)"
+        },
+        "interval_count": {
+          "basetype": "int",
+          "required": true,
+          "description": "Number of intervals between payments",
+          "unsigned": true
+        },
+        "trial_days": {
+          "basetype": "int",
+          "required": false,
+          "description": "Number of trial days",
+          "unsigned": true
+        }
+      }
+    },
+    "Price": {
+      "description": "Price configuration for a product",
+      "properties": {
+        "id": {
+          "basetype": "string",
+          "required": false,
+          "description": "Unique price identifier"
+        },
+        "product_id": {
+          "basetype": "string",
+          "required": true,
+          "description": "Associated product ID"
+        },
+        "currency": {
+          "basetype": "string",
+          "required": true,
+          "description": "Three-letter currency code"
+        },
+        "unit_amount": {
+          "basetype": "int",
+          "required": true,
+          "description": "Amount in smallest currency unit",
+          "unsigned": true
+        },
+        "recurring": {
+          "basetype": "RecurringConfig",
+          "required": false,
+          "description": "Recurring payment configuration"
+        },
+        "active": {
+          "basetype": "bool",
+          "required": true,
+          "description": "Whether the price is active",
+          "default": true
+        },
+        "metadata": {
+          "basetype": "any",
+          "required": false,
+          "description": "Additional price metadata"
+        }
+      }
+    },
+    "PaymentState": {
+      "description": "Possible states of a payment",
+      "basetype": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "refunded",
+        "partially_refunded"
+      ]
+    }
+  },
+  "functions": {
+    "createPayments": {
+      "description": "Creates a new payment service instance",
+      "parameters": [
+        {
+          "name": "config",
+          "basetype": "PaymentConfig",
+          "required": true,
+          "description": "Payment service configuration"
+        },
+        {
+          "name": "workspace",
+          "basetype": "string",
+          "required": true,
+          "description": "Workspace identifier"
+        },
+        {
+          "name": "test_mode",
+          "basetype": "bool",
+          "required": false,
+          "description": "Whether to use test mode",
+          "default": true
+        }
+      ],
+      "returns": {
+        "basetype": "PaymentService",
+        "description": "New payment service instance"
+      }
+    },
+    "$createProduct": {
+      "description": "Creates a new product",
+      "parameters": [
+        {
+          "name": "product",
+          "basetype": "Product",
+          "required": true,
+          "description": "Product details"
+        }
+      ],
+      "returns": {
+        "basetype": "Product",
+        "is_async": true,
+        "description": "Created product"
+      }
+    },
+    "$createPrice": {
+      "description": "Creates a new price for a product",
+      "parameters": [
+        {
+          "name": "price",
+          "basetype": "Price",
+          "required": true,
+          "description": "Price details"
+        }
+      ],
+      "returns": {
+        "basetype": "Price",
+        "is_async": true,
+        "description": "Created price"
+      }
+    },
+    "$requestPayment": {
+      "description": "Requests a payment for a price",
+      "parameters": [
+        {
+          "name": "price_id",
+          "basetype": "string",
+          "required": true,
+          "description": "Price to charge"
+        },
+        {
+          "name": "user_id",
+          "basetype": "string",
+          "required": true,
+          "description": "User to charge"
+        },
+        {
+          "name": "frontend",
+          "basetype": "bool",
+          "required": false,
+          "description": "Whether to return payment portal URL",
+          "default": false
+        }
+      ],
+      "returns": {
+        "basetype": ["string", "Payment"],
+        "is_async": true,
+        "description": "Payment portal URL or payment object"
+      }
+    }
+  }
+}
