@@ -123,3 +123,9 @@ p.on('payment.failed', callback_fn)
 p.on('subscription.created', callback_fn)
 p.on('subscription.updated', callback_fn)
 p.on('subscription.canceled', callback_fn)
+
+for subscriptions whe should allow;
+
+start now with the new one and remove the previous sub
+start now but combine the subs (only possible if the sub is based on quantities, like sending 100k emails; aka;
+--> on 1 dec i start 100k emails sub then on 15 dec i upgrade to 200k emails then we can do: - start a new sub at 15 dec and just kill the 100k one if the emails are gone or not (normal behavior) , add the emails left to the 200k and move the start date of the sub to 15 dec, calculate 100k/{number of days in the month} and price / number of days; multiply and deduct that from the new amount to start at 15 dec ; these should all be possible
